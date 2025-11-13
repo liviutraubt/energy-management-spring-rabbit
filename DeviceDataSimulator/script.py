@@ -10,7 +10,7 @@ url = 'amqps://zknqdylg:TWrQvZmf4ZWjp2LU3ZL21jkiDqpDp9tW@cow.rmq2.cloudamqp.com/
 params = pika.URLParameters(url)
 connection = pika.BlockingConnection(params)
 channel = connection.channel() 
-channel.queue_declare(queue='hello') 
+channel.queue_declare(queue='monitoring_queue') 
 
 # (Index, Consumption_kW)
 KEY_POINTS = [
@@ -47,7 +47,7 @@ try:
 except ValueError:
     raise SystemExit("Invalid date format, expected DD-MM-YYYY")
 
-for index in range(50):
+for index in range(143):
     total_minutes = index * 10
     hour = total_minutes // 60
     minute = total_minutes % 60
@@ -65,7 +65,7 @@ for index in range(50):
     #print(message)
     
     channel.basic_publish(exchange='',
-                      routing_key='hello',
+                      routing_key='monitoring_queue',
                       body=message)
 
 connection.close()
