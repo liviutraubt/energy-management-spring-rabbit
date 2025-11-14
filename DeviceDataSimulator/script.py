@@ -56,16 +56,18 @@ for index in range(143):
     
     data = {
         "timestamp": timestamp.isoformat(),
-        "device_id": device_id,
-        "value": consumption
+        "device":{
+            "id": device_id
+        },
+        "consumption": consumption
     }
     
     message = json.dumps(data)
     
-    #print(message)
+    print(message)
     
-    channel.basic_publish(exchange='',
-                      routing_key='monitoring_queue',
-                      body=message)
+    # channel.basic_publish(exchange='',
+    #                   routing_key='monitoring_queue',
+    #                   body=message)
 
 connection.close()
