@@ -47,7 +47,7 @@ try:
 except ValueError:
     raise SystemExit("Invalid date format, expected DD-MM-YYYY")
 
-for index in range(143):
+for index in range(10):
     total_minutes = index * 10
     hour = total_minutes // 60
     minute = total_minutes % 60
@@ -64,10 +64,10 @@ for index in range(143):
     
     message = json.dumps(data)
     
-    print(message)
+    #print(message)
     
-    # channel.basic_publish(exchange='',
-    #                   routing_key='monitoring_queue',
-    #                   body=message)
+    channel.basic_publish(exchange='',
+                      routing_key='monitoring_queue',
+                      body=message)
 
 connection.close()

@@ -1,13 +1,15 @@
 package org.example.monitorigservice;
 
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MonitorigServiceApplication {
+@EnableRabbit
+public class MonitoringServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MonitorigServiceApplication.class, args);
+        SpringApplication.run(MonitoringServiceApplication.class, args);
     }
 
 }
