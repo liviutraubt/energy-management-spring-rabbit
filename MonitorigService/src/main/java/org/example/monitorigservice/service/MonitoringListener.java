@@ -11,6 +11,8 @@ import org.example.monitorigservice.repository.MonitoringRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Service
@@ -45,6 +47,7 @@ public class MonitoringListener {
 
                 Double aux = monitoringEntity.getConsumption();
                 aux += existing.getConsumption();
+                aux = BigDecimal.valueOf(aux).setScale(2, RoundingMode.HALF_UP).doubleValue();
                 existing.setConsumption(aux);
 
                 monitoringRepository.save(existing);

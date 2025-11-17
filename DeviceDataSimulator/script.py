@@ -47,7 +47,7 @@ try:
 except ValueError:
     raise SystemExit("Invalid date format, expected DD-MM-YYYY")
 
-for index in range(10):
+for index in range(143):
     total_minutes = index * 10
     hour = total_minutes // 60
     minute = total_minutes % 60

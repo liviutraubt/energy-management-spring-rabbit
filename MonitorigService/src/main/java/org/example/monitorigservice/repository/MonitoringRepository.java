@@ -1,6 +1,5 @@
 package org.example.monitorigservice.repository;
 
-import org.example.monitorigservice.entity.DeviceEntity;
 import org.example.monitorigservice.entity.MonitoringEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,5 +11,5 @@ import java.util.List;
 public interface MonitoringRepository extends JpaRepository<MonitoringEntity, Long> {
     public List<MonitoringEntity> findAllByDeviceId(Long deviceId);
     public MonitoringEntity findByDeviceIdAndTimestamp(Long deviceId, LocalDateTime timestamp);
-    public List<MonitoringEntity> findAllByDeviceIdAndTimestampBetween(Long deviceId, LocalDateTime startTimestamp, LocalDateTime endTimestamp);
+    public List<MonitoringEntity> findAllByDeviceIdAndTimestampBetweenOrderByTimestampAsc(Long deviceId, LocalDateTime startTimestamp, LocalDateTime endTimestamp);
 }
