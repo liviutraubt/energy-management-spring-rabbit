@@ -49,8 +49,14 @@ public class PolicyService {
             new Rule("PUT",    "/api/user/*",  Set.of(Roles.ADMIN)),
 
 // --- CATCH-ALL: orice alt endpoint sub /api/users/** e tot ADMIN-only
-            new Rule("*",      "/api/user/**", Set.of(Roles.ADMIN))
+            new Rule("*",      "/api/user/**", Set.of(Roles.ADMIN)),
 
+            new Rule("POST",      "/api/monitoring/device", Set.of(Roles.ADMIN)),
+            new Rule("DELETE",      "/api/monitoring/device/*", Set.of(Roles.ADMIN)),
+            new Rule("*",      "/api/monitoring/device/**", Set.of(Roles.ADMIN)),
+
+            new Rule("GET",      "/api/monitoring", Set.of(Roles.USER, Roles.ADMIN)),
+            new Rule("*",      "/api/monitoring/**", Set.of(Roles.ADMIN))
     );
 
     public boolean isAllowed(String method, String uri, Set<Roles> userRoles) {

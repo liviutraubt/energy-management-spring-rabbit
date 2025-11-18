@@ -64,6 +64,15 @@ http:
         middlewares:
           - cors-headers
 
+    monitoring-api:
+        rule: "Host(`localhost`) && PathPrefix(`/api/monitoring`)"
+        entryPoints:
+          - web 
+        service: monitoring-service
+        middlewares:
+          - cors-headers
+          - auth-fw
+
   services:
     frontend-service:
       loadBalancer:
@@ -84,3 +93,8 @@ http:
       loadBalancer:
         servers:
           - url: "http://authenticationservice:8083" 
+
+    monitoring-service:
+      loadBalancer:
+        servers:
+          - url: "http://monitoringservice:8084"
