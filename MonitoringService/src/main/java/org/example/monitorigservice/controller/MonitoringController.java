@@ -7,6 +7,7 @@ import org.example.monitorigservice.service.MonitoringService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
@@ -38,9 +39,9 @@ public class MonitoringController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getMonitoringForDeviceAndDate(@RequestBody MonitoringRequestDTO requestDTO) {
+    public ResponseEntity<?> getMonitoringForDeviceAndDate(@RequestParam("deviceId") Long deviceId, @RequestParam("date") LocalDate date) {
         try{
-            return ResponseEntity.ok(monitoringService.getAllForDeviceAndTimestampMonitoring(requestDTO.getDeviceId(), requestDTO.getDate()));
+            return ResponseEntity.ok(monitoringService.getAllForDeviceAndTimestampMonitoring(deviceId, date));
         }
         catch(Exception e){
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));

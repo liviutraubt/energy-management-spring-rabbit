@@ -214,6 +214,21 @@ const deleteDevice = async (deviceId) => {
     }
 };
 
+const getMonitoringData = async (deviceId, dateString) => {
+    try {
+        const response = await apiClient.get('/monitoring', {
+            params: {
+                deviceId: deviceId,
+                date: dateString
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(`Eroare la preluarea datelor de monitorizare pentru device ${deviceId}:`, error);
+        throw error;
+    }
+};
+
 export {
     apiClient,
     login,
@@ -229,4 +244,5 @@ export {
     createDevice,
     updateDevice,
     deleteDevice,
+    getMonitoringData,
 };
