@@ -2,6 +2,7 @@ package org.example.monitorigservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.example.monitorigservice.dto.DeviceDTO;
 import org.example.monitorigservice.dto.MonitoringDTO;
 import org.example.monitorigservice.entity.MonitoringEntity;
 import org.example.monitorigservice.mapper.MonitoringMapper;
@@ -9,6 +10,8 @@ import org.example.monitorigservice.rabbit.RabbitConfig;
 import org.example.monitorigservice.repository.DeviceRepository;
 import org.example.monitorigservice.repository.MonitoringRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,6 +27,7 @@ public class MonitoringListener {
     private final MonitoringRepository monitoringRepository;
     private final MonitoringMapper monitoringMapper;
 
+    private final MonitoringService monitoringService;
 
     @RabbitListener(queues = RabbitConfig.DEVICE_MEASUREMENTS_QUEUE)
     public void handleMessage(String messageJson) {
@@ -55,6 +59,31 @@ public class MonitoringListener {
         } catch (Exception e) {
             System.err.println("[MONITORING] Eroare la parsarea mesajului JSON: " + messageJson);
             e.printStackTrace();
+        }
+    }
+
+    @RabbitListener(queues = RabbitConfig.DEVICE_SYNC_QUEUE)
+    public void handleDeviceSync(String messageJson, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String routingKey) {
+        try {
+            DeviceDTO deviceDTO = objectMapper.readValue(messageJson, DeviceDTO.class);
+
+            if (routingKey.endsWith("insert")) {
+                try {
+                    monitoringService.insertDevice(deviceDTO);
+                    System.out.println("[SYNC] Device inserted: " + deviceDTO.getId());
+                } catch (Exception e) {
+                    System.err.println("[SYNC] Insert failed (might already exist): " + e.getMessage());
+                }
+            } else if (routingKey.endsWith("delete")) {
+                try {
+                    monitoringService.deleteDevice(deviceDTO.getId());
+                    System.out.println("[SYNC] Device deleted: " + deviceDTO.getId());
+                } catch (Exception e) {
+                    System.err.println("[SYNC] Delete failed (might not exist): " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("[SYNC] Eroare la procesarea mesajului de sincronizare: " + messageJson);
         }
     }
 }
