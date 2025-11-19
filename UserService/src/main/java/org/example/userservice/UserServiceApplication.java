@@ -2,6 +2,7 @@ package org.example.userservice;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
                 description = "API pentru managementul utilizatorilor"
         )
 )
+@EnableRabbit
 public class UserServiceApplication {
 
     public static void main(String[] args) {

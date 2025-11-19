@@ -4,6 +4,7 @@ package org.example.deviceservice.service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.example.deviceservice.config.RabbitMQConfig;
 import org.example.deviceservice.dto.DeviceDTO;
 import org.example.deviceservice.dto.UserDTO;
 import org.example.deviceservice.entity.DeviceEntity;
@@ -12,6 +13,7 @@ import org.example.deviceservice.mapper.DeviceMapper;
 import org.example.deviceservice.mapper.UserMapper;
 import org.example.deviceservice.repository.DeviceRepository;
 import org.example.deviceservice.repository.UserRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class DeviceService {
     private final UserRepository userRepository;
     private final DeviceMapper deviceMapper;
     private final UserMapper userMapper;
+    private final RabbitTemplate rabbitTemplate;
 
     public List<DeviceDTO> findAll() {return deviceMapper.deviceEntityToDeviceDTO(deviceRepository.findAll());}
 
@@ -36,6 +39,9 @@ public class DeviceService {
         }
 
         deviceRepository.save(device);
+
+        DeviceDTO dto = deviceMapper.deviceEntityToDeviceDTO(device);
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, "device.insert", dto);
         return device.getId();
     }
 
@@ -61,6 +67,11 @@ public class DeviceService {
         }
 
         deviceRepository.deleteById(deviceId);
+
+        DeviceDTO dto = DeviceDTO.builder()
+                .id(deviceId)
+                .build();
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, "device.delete", dto);
     }
 
     @Transactional

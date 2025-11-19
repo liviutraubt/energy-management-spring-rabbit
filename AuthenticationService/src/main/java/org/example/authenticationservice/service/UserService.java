@@ -1,14 +1,17 @@
 package org.example.authenticationservice.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.example.authenticationservice.config.RabbitMQConfig;
 import org.example.authenticationservice.dto.LoginRequest;
 import org.example.authenticationservice.dto.RegisterRequest;
 import org.example.authenticationservice.dto.UserDTO;
+import org.example.authenticationservice.dto.UserServiceDTO;
 import org.example.authenticationservice.entity.Roles;
 import org.example.authenticationservice.entity.UserEntity;
 import org.example.authenticationservice.mapper.UserMapper;
 import org.example.authenticationservice.repository.UserRepository;
-import org.example.authenticationservice.security.JwtTokenService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder encoder;
+    private final RabbitTemplate rabbitTemplate;
 
     public Long registerUser(RegisterRequest registerRequest) {
         if(userRepository.existsByUsername(registerRequest.username())){
@@ -50,6 +54,10 @@ public class UserService {
     public Long deleteUser(Long id){
         if(userRepository.existsById(id)){
             userRepository.deleteById(id);
+
+            UserServiceDTO userServiceDTO = UserServiceDTO.builder().id(id).build();
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, "user.delete", userServiceDTO);
+
         }
         else {
             throw new RuntimeException("User not found");
@@ -68,7 +76,19 @@ public class UserService {
                 .role(registerRequest.role())
                 .build();
 
-        userRepository.save(user);
-        return user.getId();
+        UserEntity savedUser = userRepository.save(user);
+
+        UserServiceDTO userMessage = UserServiceDTO.builder()
+                .id(savedUser.getId())
+                .firstName(registerRequest.firstName())
+                .lastName(registerRequest.lastName())
+                .email(registerRequest.email())
+                .telephone(registerRequest.telephone())
+                .address(registerRequest.address())
+                .build();
+
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, "user.insert", userMessage);
+
+        return savedUser.getId();
     }
 }
