@@ -95,23 +95,12 @@ const getAllUsers = async () => {
 };
 
 const createUser = async (userData) => {
-    let newUserId;
 
     try {
-        const authResponse = await apiClient.post('/auth/register-admin', {
+        const response = await apiClient.post('/auth/register-admin', {
             username: userData.username,
             password: userData.password,
-            role: userData.role
-        });
-
-        newUserId = authResponse.data;
-
-        if (!newUserId) {
-            throw new Error("Nu am primit ID de la AuthenticationService");
-        }
-
-        await apiClient.post('/user', {
-            id: newUserId,
+            role: userData.role,
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
@@ -119,11 +108,7 @@ const createUser = async (userData) => {
             address: userData.address
         });
 
-        await apiClient.post('/device/user', {
-            id: newUserId
-        });
-
-        return { success: true, user: { ...userData, id: newUserId } };
+        return { success: true, user: { ...userData} };
 
     } catch (error) {
         console.error("Eroare la crearea utilizatorului în 3 pași:", error);
@@ -150,10 +135,6 @@ const updateUser = async (userId, userData) => {
 
 const deleteUser = async (userId) => {
     try {
-        await apiClient.delete(`/user/${userId}`);
-
-        await apiClient.delete(`/device/user/${userId}`);
-
         await apiClient.delete(`/auth/${userId}`);
 
         return { success: true, deletedId: userId };

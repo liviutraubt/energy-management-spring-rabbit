@@ -30,11 +30,13 @@ public class UserService {
             throw new RuntimeException("Username already exists");
         }
 
-        var user = UserEntity.builder()
+        UserEntity user = UserEntity.builder()
                 .username(registerRequest.username())
                 .password(encoder.encode(registerRequest.password()))
                 .role(Roles.USER)
                 .build();
+
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, "user.insert", user);
 
         return userRepository.save(user).getId();
     }
