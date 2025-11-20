@@ -210,6 +210,24 @@ const getMonitoringData = async (deviceId, dateString) => {
     }
 };
 
+const register = async (userData) => {
+    try {
+        const response = await apiClient.post('/auth/register', {
+            username: userData.username,
+            password: userData.password,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            email: userData.email,
+            telephone: userData.telephone,
+            address: userData.address
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Eroare la înregistrare:", error);
+        throw error;
+    }
+};
+
 export {
     apiClient,
     login,
@@ -226,4 +244,5 @@ export {
     updateDevice,
     deleteDevice,
     getMonitoringData,
+    register,
 };
