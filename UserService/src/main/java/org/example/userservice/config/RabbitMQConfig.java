@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String QUEUE_NAME = "user_insert_queue";
+    public static final String QUEUE_NAME = "user_sync_queue";
     public static final String EXCHANGE_NAME = "sd_sync_exchange";
     public static final String ROUTING_KEY = "user.*";
 

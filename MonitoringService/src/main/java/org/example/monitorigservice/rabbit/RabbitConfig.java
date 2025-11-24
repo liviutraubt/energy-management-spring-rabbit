@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
     public static final String DEVICE_MEASUREMENTS_QUEUE = "monitoring_queue";
 
-    public static final String DEVICE_SYNC_QUEUE = "device_sync_queue";
+    public static final String DEVICE_SYNC_QUEUE = "monitoring_sync_queue";
     public static final String EXCHANGE_NAME = "sd_sync_exchange";
     public static final String ROUTING_KEY = "device.*";
 
